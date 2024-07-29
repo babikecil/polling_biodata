@@ -1,0 +1,146 @@
+openapi: 3.0.0
+info:
+  title: Polling API
+  description: API untuk aplikasi polling
+  version: 1.0.0
+servers:
+  - url: 'http://localhost:5000'
+paths:
+  /api/polls:
+    get:
+      summary: Mendapatkan semua polling
+      description: Mengambil daftar semua polling yang tersedia.
+      responses:
+        '200':
+          description: Daftar polling
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  polls:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        question:
+                          type: string
+                          example: "Apa warna favorit Anda?"
+                        options:
+                          type: array
+                          items:
+                            type: string
+                          example: ["Merah", "Biru", "Hijau"]
+                        votes:
+                          type: array
+                          items:
+                            type: integer
+                          example: [0, 0, 0]
+  /api/polls/{poll_id}:
+    get:
+      summary: Mendapatkan polling berdasarkan ID
+      description: Mengambil detail polling berdasarkan ID polling yang diberikan.
+      parameters:
+        - name: poll_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID polling yang akan diambil.
+      responses:
+        '200':
+          description: Detail polling
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  question:
+                    type: string
+                    example: "Apa warna favorit Anda?"
+                  options:
+                    type: array
+                    items:
+                      type: string
+                    example: ["Merah", "Biru", "Hijau"]
+                  votes:
+                    type: array
+                    items:
+                      type: integer
+                    example: [0, 0, 0]
+        '404':
+          description: Polling tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Poll not found"
+  /api/polls/{poll_id}/vote:
+    post:
+      summary: Memberikan suara pada polling
+      description: Memberikan suara pada opsi polling tertentu.
+      parameters:
+        - name: poll_id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: ID polling untuk memberikan suara.
+        - name: option_index
+          in: query
+          required: true
+          schema:
+            type: integer
+          description: Indeks opsi yang dipilih.
+      responses:
+        '200':
+          description: Suara tercatat
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Vote recorded"
+        '400':
+          description: Indeks opsi tidak valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Invalid option index"
+        '404':
+          description: Polling tidak ditemukan
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Poll not found"
+components:
+  schemas:
+    Poll:
+      type: object
+      properties:
+        question:
+          type: string
+          example: "Apa warna favorit Anda?"
+        options:
+          type: array
+          items:
+            type: string
+          example: ["Merah", "Biru", "Hijau"]
+        votes:
+          type: array
+          items:
+            type: integer
+          example: [0, 0, 0]
